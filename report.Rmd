@@ -4,6 +4,7 @@ output: html_document
 ---
 
 ```{r code block for setup, message=FALSE}
+library(gtools)
 source('main.R')
 ```
 
@@ -141,7 +142,20 @@ numeric ordering.
 
 ```{r code block to plot variance explained and cumulative variance explained, fig.cap = caption_4}
 #Create a ggplot2 with the plot described above, refer to the reference report
-
+ls_cols <- c('Cumulative'='black')
+bar_cols <-c('Variance Explained'='light blue')
+  variance_tibble %>%
+    mutate(principal_components = factor(principal_components, 
+                                         levels = mixedsort(unique(principal_components)))) %>%
+    ggplot() + 
+    geom_bar(aes(x=principal_components, y=variance_explained, fill='Variance Explained'), stat='identity', color='black') + 
+    geom_line(aes(x=principal_components, y=cumulative, group=1, color='Cumulative')) +
+    geom_point(aes(x=principal_components, y=cumulative, group=1, color='Cumulative')) +
+    scale_colour_manual(name="Cumulative",values=ls_cols) +
+    scale_fill_manual(name="Variance Explained",values=bar_cols) +
+    labs(x='PC', y='% variance') +
+    theme_classic(base_size=8) + 
+    theme(axis.text.x=element_text(angle=90,hjust=1))
 ```
 
 
@@ -235,5 +249,9 @@ besides `col`.
 
 ```{r code block to plot heatmap of normalized intensity values for DE probes, fig.cap = caption_8}
 plot_heatmap(de_intensity, 11, 'RdBu')
+```
+```{r}
+#library(testthat)
+#test_file("test_main.R")
 ```
 
